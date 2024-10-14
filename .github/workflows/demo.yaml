@@ -16,7 +16,7 @@ jobs:
 
       # 设置 Docker Buildx
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to aliyun private docker Registry
         uses: docker/login-action@v3
@@ -32,16 +32,16 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/noderunner:latest #第2步骤图中的 第3小点的地址
-          targets: noderunner
+          target: noderunner
 
-      - name: Build and push noderunner image to ACR
+      - name: Build and push alpine image to ACR
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_NAME_SPACE }}/alpine:latest #第2步骤图中的 第3小点的地址
-          targets: noderunner
+          target: alpine
 
       # 登录到 Docker Hub
       - name: Log in to Docker Hub
@@ -57,13 +57,22 @@ jobs:
           context: .  # 构建上下文目录
           push: true  # 是否推送到 Docker Hub
           tags: ${{ secrets.DOCKER_USERNAME }}/noderunner:latest  # 镜像标签
-          targets: noderunner
+          target: noderunner
 
-      # 构建并推送 basic 镜像
-      - name: Build and push basic image t Docker Hub
+      # 构建并推送 alpine 镜像
+      - name: Build and push alpine image t Docker Hub
         uses: docker/build-push-action@v6
         with:
           context: .  # 构建上下文目录
           push: true  # 是否推送到 Docker Hub
           tags: ${{ secrets.DOCKER_USERNAME }}/alpine:latest  # 镜像标签
-          targets: basic
+          target: alpine
+
+      # 构建并推送 ubuntu 镜像
+      - name: Build and push ubuntu image t Docker Hub
+        uses: docker/build-push-action@v6
+        with:
+          context: .  # 构建上下文目录
+          push: true  # 是否推送到 Docker Hub
+          tags: ${{ secrets.DOCKER_USERNAME }}/ubuntu:latest  # 镜像标签
+          target: ubuntu
